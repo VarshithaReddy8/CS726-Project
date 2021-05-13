@@ -167,6 +167,7 @@ class Solver(object):
             result_path = os.path.join(self.results, 'image{}-attacked.jpg'.format(i+1))
             # perturbed_path = os.path.join(self.results, 'image{}-perturbed{}.jpg'.format(i+1, j))
             vutils.save_image(self.denorm(x_concat.data.cpu()), result_path, padding=0)
+            print('image', i, '- done')
             # vutils.save_image(((x_adv + 1)/ 2).data, perturbed_path, padding=0)
 
         print('{} images. L1 error: {}. L2 error: {}.'.format(n_samples, l1_error / n_samples, l2_error / n_samples))
