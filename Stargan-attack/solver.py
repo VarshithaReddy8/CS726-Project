@@ -2,6 +2,7 @@ from model import Generator, AvgBlurGenerator
 from model import Discriminator
 from torch.autograd import Variable
 from torchvision.utils import save_image
+import torchvision.utils as vutils
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -252,9 +253,11 @@ class Solver(object):
                 # Translate images.
                 x_fake_list = [x_real]
                 for c_trg in c_trg_list:
-                    x_fake_list.append(self.G(x_real, c_trg))
+                    x_fake = self.G(x_real, c_trg)
+                    x_fake_list.append(x_fake)
 
                 # Save the translated images.
+                # vutils.save_image(((x_fake + 1)/ 2).data, result_path, padding=0)
                 x_concat = torch.cat(x_fake_list, dim=3)
                 result_path = os.path.join(self.result_dir, '{}-images.jpg'.format(i+1))
                 save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
@@ -278,7 +281,6 @@ class Solver(object):
 
         for i, (x_real, c_org) in enumerate(data_loader):
             # Prepare input images and target domain labels.
-            print(c_org)
             x_real = x_real.to(self.device)
             c_trg_list = self.create_labels(c_org, self.c_dim, self.dataset, self.selected_attrs)
 
@@ -286,6 +288,8 @@ class Solver(object):
                 curr_attack = attacks.LinfPGDAttack(model=self.G, device=self.device, feat=None)
             elif attack_type=='FGSM':
                 curr_attack = attacks.FGSM(model=self.G, device=self.device, feat=None)
+            elif attack_type=='iFGSM':
+                curr_attack = attacks.iFGSM(model=self.G, device=self.device, feat=None)
 
             # pgd_attack = attacks.LinfPGDAttack(model=self.G, device=self.device, feat=None)
 
@@ -337,7 +341,7 @@ class Solver(object):
                 break
         
         # Print metrics
-        print('{} images. L1 error: {}. L2 error: {}.'.format(n_samples, 
+        print('{} images. L1 error: {}. L2 error: {}.'.format(n_samples,
         l1_error / n_samples, l2_error / n_samples))
 
 

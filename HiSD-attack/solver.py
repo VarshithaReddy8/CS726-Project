@@ -45,12 +45,13 @@ class Solver(object):
                                             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
         #Attacks
-        self.epsilon = 0.1
+        self.epsilon = 0.005
         self.k = 10
-        self.a = 0.1
+        self.a = 0.01
         self.loss_fn = nn.MSELoss().to(self.device)
         self.rand = True
 
+    # PGD Attack
     def PGD(self, X_nat, y, c_org):
         if self.rand:
             X = X_nat.clone().detach_() + torch.tensor(np.random.uniform(-self.epsilon, self.epsilon, X_nat.shape).astype('float32')).to(self.device)
@@ -74,6 +75,49 @@ class Solver(object):
 
             eta = torch.clamp(X_adv - X_nat, min=-self.epsilon, max=self.epsilon)
             X = torch.clamp(X_nat + eta, min=-1, max=1).detach_()
+
+        return X, X - X_nat
+
+    # FGSM Attack
+    def FGSM(self, X_nat, y, c_org):
+        X = X_nat.clone().detach_()
+        X.requires_grad = True
+        X.retain_grad = True
+
+        X.requires_grad = True
+        X.retain_grad = True
+        output = self.G(self.translate(X, c_org))
+
+        loss = self.loss_fn(output, y)
+        loss.backward()
+        
+        gradient = X.grad
+
+        X_adv = X + self.epsilon * gradient.sign()
+
+        X = torch.clamp(X_adv, min=-1, max=1).detach()
+
+        return X, X - X_nat
+
+    # iFGSM Attack
+    def iFGSM(self, X_nat, y, c_org):
+        X = X_nat.clone().detach_()
+        for i in range(self.k):
+            X.requires_grad = True
+            X.retain_grad = True
+
+            X.requires_grad = True
+            X.retain_grad = True
+            output = self.G(self.translate(X, c_org))
+
+            loss = self.loss_fn(output, y)
+            loss.backward()
+            
+            gradient = X.grad
+
+            X_adv = X + self.epsilon * gradient.sign()
+
+            X = torch.clamp(X_adv, min=-1, max=1).detach()
 
         return X, X - X_nat
 
@@ -124,15 +168,18 @@ class Solver(object):
 
     def test(self):
         for i, (x_real, c_org) in enumerate(self.dataloader):
+            x_list = [x_real]
             labels = self.create_labels()
             for j in range(len(labels)):
                 c_trg = self.translate(x_real, labels[j])
                 with torch.no_grad():
                     x_trg = self.G(c_trg)
-                result_path = os.path.join(self.results, 'image-{}_attr-{}.jpg'.format(i+1, j+1))
-                vutils.save_image(((x_trg + 1)/ 2).data, result_path, padding=0)
+                x_list.append(x_trg)
+            x_concat = torch.cat(x_list, dim=3)
+            result_path = os.path.join(self.results, 'image{}-trans.jpg'.format(i+1))
+            vutils.save_image(self.denorm(x_concat.data.cpu()), result_path, padding=0)
 
-    def test_attack(self):
+    def test_attack(self, attack_type):
         l1_error, l2_error, min_dist, l0_error = 0.0, 0.0, 0.0, 0.0
         n_dist, n_samples = 0, 0
 
@@ -148,7 +195,12 @@ class Solver(object):
                 c_trg = self.translate(x_real, c_org)
                 with torch.no_grad():
                     y = self.G(c_trg)
-                x_adv, perturb = self.PGD(x_real, y, c_org)
+                if attack_type=="PGD":
+                    x_adv, perturb = self.PGD(x_real, y, c_org)
+                elif attack_type=="FGSM":
+                    x_adv, perturb = self.FGSM(x_real, y, c_org)
+                elif attack_type=='iFGSM':
+                    x_adv, perturb = self.iFGSM(x_real, y, c_org)
                 x_adv = x_real+perturb
                 c_adv = self.translate(x_adv, labels[j])
                 if j==0:
@@ -165,9 +217,7 @@ class Solver(object):
                     n_samples += 1
             x_concat = torch.cat(x_fake_list, dim=3)
             result_path = os.path.join(self.results, 'image{}-attacked.jpg'.format(i+1))
-            # perturbed_path = os.path.join(self.results, 'image{}-perturbed{}.jpg'.format(i+1, j))
             vutils.save_image(self.denorm(x_concat.data.cpu()), result_path, padding=0)
             print('image', i, '- done')
-            # vutils.save_image(((x_adv + 1)/ 2).data, perturbed_path, padding=0)
 
         print('{} images. L1 error: {}. L2 error: {}.'.format(n_samples, l1_error / n_samples, l2_error / n_samples))

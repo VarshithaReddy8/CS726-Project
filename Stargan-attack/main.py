@@ -50,6 +50,9 @@ def main(config):
             solver.train_multi()
     elif config.mode == 'test':
         if config.dataset in ['CelebA', 'RaFD']:
+            solver.test()
+    elif config.mode == 'test_attack':
+        if config.dataset in ['CelebA', 'RaFD']:
             solver.test_attack(config.attack_type)
         elif config.dataset in ['Both']:
             solver.test_multi()
@@ -88,11 +91,11 @@ if __name__ == '__main__':
 
     # Test configuration.
     parser.add_argument('--test_iters', type=int, default=200000, help='test model from this step')
-    parser.add_argument('--attack_type', type=str, default='PGD', choices=['PGD', 'FGSM'])
+    parser.add_argument('--attack_type', type=str, default='PGD', choices=['PGD', 'FGSM', 'iFGSM'])
 
     # Miscellaneous.
     parser.add_argument('--num_workers', type=int, default=1)
-    parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
+    parser.add_argument('--mode', type=str, default='test_attack', choices=['train', 'test', 'test_attack'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=False)
 
     # Directories.

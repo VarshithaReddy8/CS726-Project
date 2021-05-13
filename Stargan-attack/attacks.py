@@ -93,8 +93,8 @@ class iFGSM(object):
 
         for i in range(self.k):
             X.requires_grad = True
+            X.retain_grad = True
             output, feats = self.model(X, c_trg)
-
             if self.feat:
                 output = feats[self.feat]
 
@@ -103,12 +103,9 @@ class iFGSM(object):
             loss.backward()
             grad = X.grad
 
-            X_adv = X + self.a * grad.sign()
+            X_adv = X + self.epsilon*grad.sign()
 
-            eta = torch.clamp(X_adv - X_nat, min=-self.epsilon, max=self.epsilon)
-            X = torch.clamp(X_nat + eta, min=-1, max=1).detach_()
-
-        self.model.zero_grad()
+            X = torch.clamp(X_adv, min=-1, max=1).detach()
 
         return X, X - X_nat
 

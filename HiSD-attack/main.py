@@ -21,7 +21,7 @@ def main(config):
 	if config.mode=='test':
 		solver.test()
 	elif config.mode=='test_attack':
-		solver.test_attack()
+		solver.test_attack(config.attack_type)
 	else:
 		print("Select mode")
 
@@ -36,6 +36,7 @@ if __name__ == '__main__':
     parser.add_argument('--results_dir', type=str, default='results')
     parser.add_argument('--c_dim', type=int, default=2)
     parser.add_argument('--selected_attrs', '--list', nargs='+', default=['bangs', 'glasses'])
+    parser.add_argument('--attack_type', type=str, default='iFGSM', choices=['PGD', 'FGSM', 'iFGSM'])
     
     config = parser.parse_args()
     main(config)
