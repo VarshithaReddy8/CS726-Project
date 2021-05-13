@@ -1,5 +1,5 @@
 # CS726-Project
-Usage
+## Usage
 Cloning he repository: git clone https://github.com/VarshithaReddy8/CS726-Project.git
 
 StarGAN:
