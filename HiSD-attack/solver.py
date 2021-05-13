@@ -23,7 +23,7 @@ class Solver(object):
         self.config = get_config('configs/celeba-hq_256.yaml')
         self.noise_dim = self.config['noise_dim']
         self.image_size = self.config['new_size']
-        self.checkpoint = 'checkpoint_256_celeba-hq.pt'
+        self.checkpoint = config.checkpoint
         self.trainer = HiSD_Trainer(self.config)
         self.state_dict = torch.load(self.checkpoint, map_location=torch.device('cpu'))
         self.trainer.models.gen.load_state_dict(self.state_dict['gen_test'])

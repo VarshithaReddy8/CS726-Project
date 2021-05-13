@@ -30,6 +30,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--mode', type=str, default='test_attack', choices=['test', 'test_attack'])
+    parser.add_argument('--checkpoint', type=str, default='checkpoint_256_celeba-hq.pt')
     parser.add_argument('--dataset_dir', type=str, default='dataset')
     parser.add_argument('--reference_images', type=str, default='reference_images')
     parser.add_argument('--results_dir', type=str, default='results')
