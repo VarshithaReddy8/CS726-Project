@@ -1,21 +1,21 @@
 # CS726-Project
 ## Usage
-Cloning he repository: git clone https://github.com/VarshithaReddy8/CS726-Project.git
+Cloning the repository: git clone https://github.com/VarshithaReddy8/CS726-Project.git
 
 StarGAN:
 
 1. Dataset
-Download CelebA dataset
+Download CelebA dataset/
 $ bash download.sh celeba
 
 2. Pretrained Models
-Download pretrained starGAN models - 
+Download pretrained starGAN models - /
 $ bash download.sh pretrained-celeba-128x128 or 
 $ bash download.sh pretrained-celeba-256x256
 Save these models in stargan_celeba_128 and stargan_celeba_256 respectively.
 
 3. Testing attacks 
-To test StarGAN on CelebA
+To test StarGAN on CelebA/
 $ python3 main.py --mode test --dataset CelebA --image_size 128 --c_dim 5 \
                  --sample_dir stargan_celeba/samples --log_dir stargan_celeba/logs \
                  --model_save_dir stargan_celeba/models --result_dir stargan_celeba/results \
