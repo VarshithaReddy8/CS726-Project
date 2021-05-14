@@ -257,7 +257,6 @@ class Solver(object):
                     x_fake_list.append(x_fake)
 
                 # Save the translated images.
-                # vutils.save_image(((x_fake + 1)/ 2).data, result_path, padding=0)
                 x_concat = torch.cat(x_fake_list, dim=3)
                 result_path = os.path.join(self.result_dir, '{}-images.jpg'.format(i+1))
                 save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
@@ -291,8 +290,6 @@ class Solver(object):
             elif attack_type=='iFGSM':
                 curr_attack = attacks.iFGSM(model=self.G, device=self.device, feat=None)
 
-            # pgd_attack = attacks.LinfPGDAttack(model=self.G, device=self.device, feat=None)
-
             # Translated images.
             x_fake_list = [x_real]
             tide = 0
@@ -306,7 +303,6 @@ class Solver(object):
 
                 # Attacks
                 x_adv, perturb = curr_attack.perturb(x_real, gen_noattack, c_trg)
-                # x_adv, perturb = pgd_attack.perturb(x_real, gen_noattack, c_trg)
 
                 # Generate adversarial example
                 x_adv = x_real + perturb
@@ -317,10 +313,8 @@ class Solver(object):
                     gen, _ = self.G(x_adv, c_trg)
 
                     # Add to lists
-                    # x_fake_list.append(blurred_image)
                     if tide==0:
                         x_fake_list.append(x_adv)
-                    # x_fake_list.append(perturb)
                     x_fake_list.append(gen)
 
                     l1_error += F.l1_loss(gen, gen_noattack)

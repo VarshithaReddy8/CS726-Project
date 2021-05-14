@@ -16,7 +16,7 @@ Save these models in stargan_celeba_128 and stargan_celeba_256 respectively.
 
 3. Testing attacks 
 To test StarGAN on CelebA  
-$ python3 main.py --mode test --dataset CelebA --image_size 128 --c_dim 5 \
+$ python3 main.py --mode test_attack --dataset CelebA --image_size 128 --c_dim 5 \
                  --sample_dir stargan_celeba/samples --log_dir stargan_celeba/logs \
                  --model_save_dir stargan_celeba/models --result_dir stargan_celeba/results \
                  --selected_attrs Black_Hair Blond_Hair Brown_Hair Male Young
@@ -31,7 +31,7 @@ Download pretrained checkpoint checkpoint_256_celeba-hq.pt from
 [Google Drive](https://drive.google.com/file/d/1KDrNWLejpo02fcalUOrAJOl1hGoccBKl/view?usp=sharing) this link to the root directory.
 
 3. Testing attacks
-$ python3 main.py --mode test_attacks --dataset_dir dataset
+$ python3 main.py --mode test_attack --dataset_dir dataset
 
 For more options check main.py files of the models.
 
