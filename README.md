@@ -29,7 +29,6 @@ Download CelebA dataset and put the images in dataset folder.
 2. Model Configuration
 Download pretrained checkpoint checkpoint_256_celeba-hq.pt from 
 [Google Drive](https://drive.google.com/file/d/1KDrNWLejpo02fcalUOrAJOl1hGoccBKl/view?usp=sharing) this link to the root directory.
-$ bash download.sh checkpoint
 
 3. Testing attacks
 $ python3 main.py --mode test_attacks --dataset_dir dataset
