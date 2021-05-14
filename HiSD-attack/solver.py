@@ -60,6 +60,8 @@ class Solver(object):
 
         X.requires_grad = True
         X.retain_grad = True
+        # epsilon = self.epsilon
+        epsilon = 0.05
 
         for i in range(self.k):
             X.requires_grad = True
@@ -73,7 +75,7 @@ class Solver(object):
 
             X_adv = X + self.a * gradient.sign()
 
-            eta = torch.clamp(X_adv - X_nat, min=-self.epsilon, max=self.epsilon)
+            eta = torch.clamp(X_adv - X_nat, min=-epsilon, max=epsilon)
             X = torch.clamp(X_nat + eta, min=-1, max=1).detach_()
 
         return X, X - X_nat
@@ -84,8 +86,8 @@ class Solver(object):
         X.requires_grad = True
         X.retain_grad = True
 
-        X.requires_grad = True
-        X.retain_grad = True
+        # epsilon = self.epsilon
+        epsilon = 0.1
         output = self.G(self.translate(X, c_org))
 
         loss = self.loss_fn(output, y)
@@ -93,7 +95,7 @@ class Solver(object):
         
         gradient = X.grad
 
-        X_adv = X + self.epsilon * gradient.sign()
+        X_adv = X + epsilon * gradient.sign()
 
         X = torch.clamp(X_adv, min=-1, max=1).detach()
 
@@ -102,12 +104,11 @@ class Solver(object):
     # iFGSM Attack
     def iFGSM(self, X_nat, y, c_org):
         X = X_nat.clone().detach_()
+        epsilon = self.epsilon
         for i in range(self.k):
             X.requires_grad = True
             X.retain_grad = True
 
-            X.requires_grad = True
-            X.retain_grad = True
             output = self.G(self.translate(X, c_org))
 
             loss = self.loss_fn(output, y)
@@ -115,7 +116,7 @@ class Solver(object):
             
             gradient = X.grad
 
-            X_adv = X + self.epsilon * gradient.sign()
+            X_adv = X + epsilon * gradient.sign()
 
             X = torch.clamp(X_adv, min=-1, max=1).detach()
 
@@ -219,6 +220,5 @@ class Solver(object):
             result_path = os.path.join(self.results, 'image{}-attacked.jpg'.format(i+1))
             vutils.save_image(self.denorm(x_concat.data.cpu()), result_path, padding=0)
             print('image', i, '- done')
-            print('{} images. L1 error: {}. L2 error: {}.'.format(n_samples, l1_error / n_samples, l2_error / n_samples))
 
         print('{} images. L1 error: {}. L2 error: {}.'.format(n_samples, l1_error / n_samples, l2_error / n_samples))

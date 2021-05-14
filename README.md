@@ -2,7 +2,7 @@
 ## Usage
 Cloning the repository: git clone https://github.com/VarshithaReddy8/CS726-Project.git
 
-StarGAN:
+### StarGAN:
 
 1. Dataset
 Download CelebA dataset  
@@ -21,7 +21,7 @@ $ python3 main.py --mode test_attack --dataset CelebA --image_size 128 --c_dim 5
                  --model_save_dir stargan_celeba/models --result_dir stargan_celeba/results \
                  --selected_attrs Black_Hair Blond_Hair Brown_Hair Male Young
                  
-HiSD
+### HiSD
 
 1. Dataset
 Download CelebA dataset and put the images in dataset folder.
