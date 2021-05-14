@@ -11,8 +11,8 @@ $ bash download.sh celeba
 2. Pretrained Models
 Download pretrained starGAN models -  
 $ bash download.sh pretrained-celeba-128x128 or  
-$ bash download.sh pretrained-celeba-256x256
-Save these models in stargan_celeba_128 and stargan_celeba_256 respectively.
+$ bash download.sh pretrained-celeba-256x256  
+sSave these models in stargan_celeba_128 and stargan_celeba_256 respectively.
 
 3. Testing attacks 
 To test StarGAN on CelebA  
